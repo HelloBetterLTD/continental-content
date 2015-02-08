@@ -2,7 +2,7 @@
     "name": "silverstripers/continental-content",
     "description": "Lets you add contents for different continents",
     "type": "silverstripe-module",
-    "keywords": ["silverstripe", "gridfield", "buttons"],
+    "keywords": ["silverstripe", "contents", "continental", "iptolocation"],
 	  "license": "BSD-3-Clause",
     "authors": [
     {
