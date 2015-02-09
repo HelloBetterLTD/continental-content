@@ -9,7 +9,7 @@
 
 class ContinentalControllerExtension extends Extension {
 
-	function onAfterInit(){
+	function onBeforeInit(){
 		if(isset($_REQUEST['FAKE_IP'])){
 			Session::set('FAKE_IP', $_REQUEST['FAKE_IP']);
 		}

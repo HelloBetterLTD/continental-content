@@ -7,7 +7,17 @@
  * To change this template use File | Settings | File Templates.
  *
  *
- * MELBOURNE == 127.255.255.255
+ * MELBOURNE ==
+ * 		220.253.124.128
+ * 		220.253.124.128
+ *		220.244.123.208
+ * 		220.246.2.112
+ *
+ * SYDNEY ==
+ * 		223.252.22.128
+ *		223.165.107.0
+ * 		221.133.191.80
+ * 		220.245.102.48
  *
  */
 
@@ -123,7 +133,7 @@ class ContinentalContent extends DataExtension {
 			self::$array_generated_fields[$class] = array(
 				'db'						=> $arrNewFields,
 				'indexes'					=> $arrBaseIndexes,
-				'many_many_extraFields'		=> $arrNewManyManyExtra
+				// 'many_many_extraFields'		=> $arrNewManyManyExtra
 			);
 
 			return self::$array_generated_fields[$class];
@@ -191,23 +201,24 @@ class ContinentalContent extends DataExtension {
 	 * @return int|string
 	 */
 	public static function CurrentContinent(){
-		//self::$current_continent = 'melbourne';
 		if(self::$current_continent)
 			return self::$current_continent;
 
 		self::$current_continent = CONTINENTAL_DEFAULT;
 		if($location = ContinentalContentUtils::GetLocation()){
 			foreach(self::GetContinents() as $strContinent => $strCode){
-				if(strtolower($location->Country) == strtolower($strContinent)
-					|| strtolower($location->Region) == strtolower($strContinent)
-					|| strtolower($location->City) == strtolower($strContinent)
-					|| strtolower($location->Country) == strtolower($strCode)
-					|| strtolower($location->Region) == strtolower($strCode)
-					|| strtolower($location->City) == strtolower($strCode)
+				if(strtolower(trim($location->Country)) == strtolower(trim($strContinent))
+					|| strtolower(trim($location->Region)) == strtolower(trim($strContinent))
+					|| strtolower(trim($location->City)) == strtolower(trim($strContinent))
+					|| strtolower(trim($location->Country)) == strtolower(trim($strCode))
+					|| strtolower(trim($location->Region)) == strtolower(trim($strCode))
+					|| strtolower(trim($location->City)) == strtolower(trim($strCode))
 				)
 					self::$current_continent = $strCode;
+
 			}
 		}
+
 		return self::$current_continent;
 	}
 
