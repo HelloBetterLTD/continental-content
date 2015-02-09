@@ -21,6 +21,12 @@ class ContinentalContent extends DataExtension {
 		'HTMLVarchar'
 	);
 
+	private static $array_generated_fields = array();
+
+	/**
+	 * @param $callback
+	 * @return mixed
+	 */
 	protected static function without_continental_fields($callback) {
 		$before = self::$disable_continental_fields;
 		self::$disable_continental_fields = true;
@@ -30,10 +36,15 @@ class ContinentalContent extends DataExtension {
 	}
 
 
+	/**
+	 * @param $class
+	 * @param $extension
+	 * @param $args
+	 * @return array|mixed
+	 */
 	public static function get_extra_config($class, $extension, $args) {
 		if(self::$disable_continental_fields) return array();
 
-		// Merge all config values for subclasses
 		foreach (ClassInfo::subclassesFor($class) as $subClass) {
 			$config = self::make_continental_fields($subClass);
 			foreach($config as $name => $value) {
@@ -41,7 +52,6 @@ class ContinentalContent extends DataExtension {
 			}
 		}
 
-		// Force all subclass DB caches to invalidate themselves since their db attribute is now expired
 		DataObject::reset();
 
 		return self::make_continental_fields($class);
@@ -50,57 +60,68 @@ class ContinentalContent extends DataExtension {
 
 	/**
 	 * @param $class
+	 * @param $config
 	 * @return mixed
+	 */
+	public static function get_configs_for_class($class, $config){
+		return self::without_continental_fields(function() use ($class, $config) {
+			return Config::inst()->get($class, $config, Config::UNINHERITED);
+		});
+	}
+
+
+	/**
+	 * @param $class
+	 * @return mixed
+	 *
+	 * make fields for the dataobjects for the continents
 	 */
 	public static function make_continental_fields($class){
 
-		$arrBaseFields = self::without_continental_fields(function() use ($class) {
-			return Config::inst()->get($class, 'db', Config::UNINHERITED);
-		});
+		if(isset(self::$array_generated_fields[$class])){
+			return self::$array_generated_fields[$class];
+		}
+		else{
+			$arrBaseFields = self::get_configs_for_class($class, 'db');
+			$arrBaseIndexes = self::get_configs_for_class($class, 'indexes');
+			$arrBaseManyManyExtra = self::get_configs_for_class($class, 'many_many_ExtraFields');
+			$arrMultipleFields = Config::inst()->get('ContinentalContent', 'content_fields_types');
 
-		$arrBaseIndexes = self::without_continental_fields(function() use ($class) {
-			return Config::inst()->get($class, 'indexes', Config::UNINHERITED);
-		});
+			$arrNewFields = $arrBaseFields;
+			$indexes = $arrBaseIndexes;
+			$arrNewManyManyExtra = $arrBaseManyManyExtra;
 
-		$arrBaseManyManyExtra = self::without_continental_fields(function() use ($class) {
-			return Config::inst()->get($class, 'many_many_ExtraFields', Config::UNINHERITED);
-		});
-
-
-		$arrMultipleFields = Config::inst()->get('ContinentalContent', 'content_fields_types');
-
-		$arrNewFields = $arrBaseFields;
-		$indexes = $arrBaseIndexes;
-		$arrNewManyManyExtra = $arrBaseManyManyExtra;
-
-		foreach(self::GetContinents() as $strName => $strSuffix){
-			foreach($arrBaseFields as $strKey => $strType){
-				$strFieldType = self::GetFieldType($strType);
-				if(in_array($strFieldType, $arrMultipleFields)){
-					$arrNewFields[$strKey . '_' . $strSuffix] = $strType;
-					if($indexes && array_key_exists($strKey, $arrBaseIndexes)){
-						$indexes[] = $strKey . '_' . $strSuffix;
+			foreach(self::GetContinents() as $strName => $strSuffix){
+				foreach($arrBaseFields as $strKey => $strType){
+					if(in_array(self::GetFieldType($strType), $arrMultipleFields)){
+						$arrNewFields[$strKey . '_' . $strSuffix] = $strType;
+						if($indexes && array_key_exists($strKey, $arrBaseIndexes))
+							$indexes[] = $strKey . '_' . $strSuffix;
 					}
 				}
-			}
 
-			if($arrBaseManyManyExtra) foreach($arrBaseManyManyExtra as $strRelation => $arrFields){
-				foreach($arrFields as $strKey => $strType){
-					$strFieldType = self::GetFieldType($strType);
-					if(in_array($strFieldType, $arrMultipleFields)){
-						$arrNewManyManyExtra[$strRelation][$strKey . '_' . $strSuffix] = $strType;
+				if($arrBaseManyManyExtra) foreach($arrBaseManyManyExtra as $strRelation => $arrFields){
+					foreach($arrFields as $strKey => $strType){
+						if(in_array(self::GetFieldType($strType), $arrMultipleFields))
+							$arrNewManyManyExtra[$strRelation][$strKey . '_' . $strSuffix] = $strType;
+
 					}
 				}
+
 			}
 
+			self::$array_generated_fields[$class] = array(
+				'db'						=> $arrNewFields,
+				'indexes'					=> $arrBaseIndexes,
+				'many_many_extraFields'		=> $arrNewManyManyExtra
+			);
 
+			return self::$array_generated_fields[$class];
 		}
 
-		return array(
-			'db'						=> $arrNewFields,
-			'indexes'					=> $arrBaseIndexes,
-			'many_many_extraFields'		=> $arrNewManyManyExtra
-		);
+
+
+
 	}
 
 
@@ -132,11 +153,28 @@ class ContinentalContent extends DataExtension {
 				$name = preg_replace($regex, $replace, $strExtension);
 			$arrRet[$strContinent] = $name;
 		}
-
 		return $arrRet;
-
 	}
 
+
+	/**
+	 * @param FieldList $fields
+	 */
+	public function updateCMSFields(FieldList $fields) {
+		$arrBaseDB = Config::inst()->get(get_class($this->owner), 'db');
+		foreach(self::GetContinents() as $strContinent => $strSuffix){
+			foreach($arrBaseDB as $strName => $strType){
+				if(array_key_exists($strName . '_' . $strSuffix, $arrBaseDB)){
+					if($dataField = $fields->dataFieldByName($strName)){
+						$newField = clone $dataField;
+						$newField->setName($strName . '_' . $strSuffix);
+						$newField->setTitle($dataField->Title() . ' (' . $strContinent . ')');
+						$fields->insertAfter($newField, $strName);
+					}
+				}
+			}
+		}
+	}
 
 
 
