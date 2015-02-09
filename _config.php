@@ -9,3 +9,5 @@
 
 
 define('CONTINENTAL_CONTENT_PATH', dirname(__FILE__));
+
+define('CONTINENTAL_DEFAULT', 100);

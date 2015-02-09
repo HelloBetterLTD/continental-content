@@ -5,6 +5,10 @@
  * Date: 2/8/15
  * Time: 11:38 AM
  * To change this template use File | Settings | File Templates.
+ *
+ *
+ * MELBOURNE == 127.255.255.255
+ *
  */
 
 
@@ -22,6 +26,10 @@ class ContinentalContent extends DataExtension {
 	);
 
 	private static $array_generated_fields = array();
+
+	private static $current_continent = '';
+
+	private static $affected_tables = array();
 
 	/**
 	 * @param $callback
@@ -107,8 +115,10 @@ class ContinentalContent extends DataExtension {
 
 					}
 				}
-
 			}
+
+			if(count($arrNewFields) != count($arrBaseFields))
+				self::$affected_tables[] = $class;
 
 			self::$array_generated_fields[$class] = array(
 				'db'						=> $arrNewFields,
@@ -176,6 +186,86 @@ class ContinentalContent extends DataExtension {
 		}
 	}
 
+
+	/**
+	 * @return int|string
+	 */
+	public static function CurrentContinent(){
+		//self::$current_continent = 'melbourne';
+		if(self::$current_continent)
+			return self::$current_continent;
+
+		self::$current_continent = CONTINENTAL_DEFAULT;
+		if($location = ContinentalContentUtils::GetLocation()){
+			foreach(self::GetContinents() as $strContinent => $strCode){
+				if(strtolower($location->Country) == strtolower($strContinent)
+					|| strtolower($location->Region) == strtolower($strContinent)
+					|| strtolower($location->City) == strtolower($strContinent)
+					|| strtolower($location->Country) == strtolower($strCode)
+					|| strtolower($location->Region) == strtolower($strCode)
+					|| strtolower($location->City) == strtolower($strCode)
+				)
+					self::$current_continent = $strCode;
+			}
+		}
+		return self::$current_continent;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getAffectedTables(){
+		return self::$affected_tables;
+	}
+
+
+	/**
+	 * @param $class
+	 * @param $select
+	 * @param $fallback
+	 * @return string
+	 */
+	protected function localiseSelect($class, $select, $fallback) {
+		return "CASE
+				WHEN (\"{$class}\".\"{$select}\" IS NOT NULL AND \"{$class}\".\"{$select}\" != '')
+				THEN \"{$class}\".\"{$select}\"
+				ELSE \"{$class}\".\"{$fallback}\" END";
+	}
+
+
+	/**
+	 * @param SQLQuery $query
+	 * @param DataQuery $dataQuery
+	 */
+	public function augmentSQL(SQLQuery &$query, DataQuery &$dataQuery = null) {
+		$includedTables = ContinentalContent::getAffectedTables();
+		$strContinent = ContinentalContent::CurrentContinent();
+		if($strContinent != CONTINENTAL_DEFAULT){
+
+			foreach($query->getSelect() as $alias => $select) {
+
+				if(!preg_match('/^"(?<class>\w+)"\."(?<field>\w+)"$/i', $select, $matches)) continue;
+				$class = $matches['class'];
+				$field = $matches['field'];
+
+
+				if(!in_array($class, $includedTables)) continue;
+
+				$strNewField = $field . '_' . $strContinent;
+				$arrFields = ContinentalContent::make_continental_fields($class);
+
+				if(isset($arrFields['db']) && isset($arrFields['db'][$strNewField])){
+					$expression = $this->localiseSelect($class, $strNewField, $field);
+					$query->selectField($expression, $alias);
+				}
+			}
+
+
+			// TODO: update where clues too
+
+		}
+	}
 
 
 
