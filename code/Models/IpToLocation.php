@@ -22,5 +22,13 @@ class IpToLocation extends DataObject {
 		'IPTo'			=> true
 	);
 
+	private static $summary_fields = array(
+		'IPFrom',
+		'IPTo',
+		'Country',
+		'Region',
+		'City'
+	);
+
 
 } 
