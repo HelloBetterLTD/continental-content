@@ -109,7 +109,7 @@ class ContinentalContent extends DataExtension {
 			$arrNewManyManyExtra = $arrBaseManyManyExtra;
 
 			foreach(self::GetContinents() as $strName => $strSuffix){
-				foreach($arrBaseFields as $strKey => $strType){
+				if($arrBaseFields) foreach($arrBaseFields as $strKey => $strType){
 					if(in_array(self::GetFieldType($strType), $arrMultipleFields)){
 						$arrNewFields[$strKey . '_' . $strSuffix] = $strType;
 						if($indexes && array_key_exists($strKey, $arrBaseIndexes))
@@ -182,7 +182,7 @@ class ContinentalContent extends DataExtension {
 	public function updateCMSFields(FieldList $fields) {
 		$arrBaseDB = Config::inst()->get(get_class($this->owner), 'db');
 		foreach(self::GetContinents() as $strContinent => $strSuffix){
-			foreach($arrBaseDB as $strName => $strType){
+			if($arrBaseDB) foreach($arrBaseDB as $strName => $strType){
 				if(array_key_exists($strName . '_' . $strSuffix, $arrBaseDB)){
 					if($dataField = $fields->dataFieldByName($strName)){
 						$newField = clone $dataField;
