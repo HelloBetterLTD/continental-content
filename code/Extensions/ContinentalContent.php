@@ -212,9 +212,11 @@ class ContinentalContent extends DataExtension {
 					|| strtolower(trim($location->Country)) == strtolower(trim($strCode))
 					|| strtolower(trim($location->Region)) == strtolower(trim($strCode))
 					|| strtolower(trim($location->City)) == strtolower(trim($strCode))
-				)
+				){
 					self::$current_continent = $strCode;
-
+					break;
+				}
+					
 			}
 		}
 
@@ -249,31 +251,35 @@ class ContinentalContent extends DataExtension {
 	 * @param DataQuery $dataQuery
 	 */
 	public function augmentSQL(SQLQuery &$query, DataQuery &$dataQuery = null) {
-		$includedTables = ContinentalContent::getAffectedTables();
-		$strContinent = ContinentalContent::CurrentContinent();
-		if($strContinent != CONTINENTAL_DEFAULT){
+		
+		$controller = Controller::curr();
+		if(!is_subclass_of($controller ,'LeftAndMain')){
+			$includedTables = ContinentalContent::getAffectedTables();
+			$strContinent = ContinentalContent::CurrentContinent();
+			if($strContinent != CONTINENTAL_DEFAULT){
 
-			foreach($query->getSelect() as $alias => $select) {
+				foreach($query->getSelect() as $alias => $select) {
 
-				if(!preg_match('/^"(?<class>\w+)"\."(?<field>\w+)"$/i', $select, $matches)) continue;
-				$class = $matches['class'];
-				$field = $matches['field'];
+					if(!preg_match('/^"(?<class>\w+)"\."(?<field>\w+)"$/i', $select, $matches)) continue;
+					$class = $matches['class'];
+					$field = $matches['field'];
 
 
-				if(!in_array($class, $includedTables)) continue;
+					if(!in_array($class, $includedTables)) continue;
 
-				$strNewField = $field . '_' . $strContinent;
-				$arrFields = ContinentalContent::make_continental_fields($class);
+					$strNewField = $field . '_' . $strContinent;
+					$arrFields = ContinentalContent::make_continental_fields($class);
 
-				if(isset($arrFields['db']) && isset($arrFields['db'][$strNewField])){
-					$expression = $this->localiseSelect($class, $strNewField, $field);
-					$query->selectField($expression, $alias);
+					if(isset($arrFields['db']) && isset($arrFields['db'][$strNewField])){
+						$expression = $this->localiseSelect($class, $strNewField, $field);
+						$query->selectField($expression, $alias);
+					}
 				}
+
+
+				// TODO: update where clues too
+
 			}
-
-
-			// TODO: update where clues too
-
 		}
 	}
 

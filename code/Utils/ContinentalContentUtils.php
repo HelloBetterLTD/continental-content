@@ -33,12 +33,21 @@ class ContinentalContentUtils {
 	public static function GetLocation(){
 		if($strIP = self::IPAddress()){
 			$iNumber = self::IPAddressToIPNumber($strIP);
-			return IpToLocation::get()->filter(array(
+			if(self::GetProvider() == 'IPDBCOM')
+				return IpToLocation::get()->filter(array(
 				'IPFrom:LessThanOrEqual'	=> $iNumber,
-				'IPTo:GreaterThanOrEqual'	=> $iNumber
-			))->first();
+				))->sort('IPFrom DESC')->first();
+			else
+				return IpToLocation::get()->filter(array(
+					'IPFrom:LessThanOrEqual'	=> $iNumber,
+					'IPTo:GreaterThanOrEqual'	=> $iNumber
+				))->first();
 		}
 		return null;
 	}
+	
+	public static function GetProvider(){
+		return Config::inst()->get('ContinentalContent', 'Provider');
 
-} 
+	}
+}
