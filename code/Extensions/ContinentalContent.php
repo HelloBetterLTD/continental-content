@@ -225,8 +225,8 @@ class ContinentalContent extends DataExtension {
 
 
 		self::$current_continent = CONTINENTAL_DEFAULT;
-		if(!self::IsViewingThroughProxy() && Session::get('DETECTED_LOCATION')){
-			self::$current_continent = strtolower(trim(Session::get('DETECTED_LOCATION')));
+		if(!self::IsViewingThroughProxy() && Session::get('SESSION_MAP_LOCATION')){
+			self::$current_continent = strtolower(trim(Session::get('SESSION_MAP_LOCATION')));
 		}
 		else if($location = ContinentalContentUtils::GetLocation()){
 			foreach(self::GetContinents() as $strContinent => $strCode){
@@ -307,6 +307,11 @@ class ContinentalContent extends DataExtension {
 		}
 	}
 
+
+	/**
+	 * @param $base
+	 * @param $action
+	 */
 	public function updateRelativeLink(&$base, &$action) {
 		if(Config::inst()->get('ContinentalContent', 'custom_urls') == 'Y'){
 			if($strContinent = ContinentalContent::CurrentContinent()){
@@ -315,6 +320,17 @@ class ContinentalContent extends DataExtension {
 					$base = Controller::join_links($strContinent, $base);
 			}
 		}
+	}
+
+
+	public static function ForceLocationFromSession($strLocation){
+		Session::set('SESSION_MAP_LOCATION', $strLocation);
+		Session::save();
+	}
+
+	public static function ClearForceLocation(){
+		Session::clear('SESSION_MAP_LOCATION');
+		Session::save();
 	}
 
 
