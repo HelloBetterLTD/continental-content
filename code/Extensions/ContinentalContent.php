@@ -195,6 +195,26 @@ class ContinentalContent extends DataExtension {
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
+	public static function IsViewingThroughProxy(){
+		$bRet = false;
+		$strProxyIP = Config::inst()->get('ContinentalContent', 'proxy_ip');
+		if($strProxyIP != '0.0.0.0'){
+			$bRet = $strProxyIP == ContinentalContentUtils::IPAddress();
+		}
+		return $bRet;
+
+	}
+
+	/**
+	 * @param $strContinent
+	 */
+	public static function ForceUpdateContinent($strContinent){
+		self::$current_continent = $strContinent;
+	}
+
 
 	/**
 	 * @return int|string
@@ -203,8 +223,12 @@ class ContinentalContent extends DataExtension {
 		if(self::$current_continent)
 			return self::$current_continent;
 
+
 		self::$current_continent = CONTINENTAL_DEFAULT;
-		if($location = ContinentalContentUtils::GetLocation()){
+		if(!self::IsViewingThroughProxy() && Session::get('DETECTED_LOCATION')){
+			self::$current_continent = strtolower(trim(Session::get('DETECTED_LOCATION')));
+		}
+		else if($location = ContinentalContentUtils::GetLocation()){
 			foreach(self::GetContinents() as $strContinent => $strCode){
 				if(strtolower(trim($location->Country)) == strtolower(trim($strContinent))
 					|| strtolower(trim($location->Region)) == strtolower(trim($strContinent))
@@ -279,6 +303,16 @@ class ContinentalContent extends DataExtension {
 
 				// TODO: update where clues too
 
+			}
+		}
+	}
+
+	public function updateRelativeLink(&$base, &$action) {
+		if(Config::inst()->get('ContinentalContent', 'custom_urls') == 'Y'){
+			if($strContinent = ContinentalContent::CurrentContinent()){
+				$bAddContinent = $strContinent != 100;
+				if($bAddContinent && strpos($base, $strContinent) === false)
+					$base = Controller::join_links($strContinent, $base);
 			}
 		}
 	}

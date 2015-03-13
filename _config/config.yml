@@ -8,3 +8,12 @@ After: 'framework/*','cms/*'
 Controller:
   extensions:
     - ContinentalControllerExtension
+ContinentalContent:
+  proxy_ip: '0.0.0.0'
+  custom_urls: 'Y'
+Injector:
+  RequestProcessor:
+    properties:
+      filters:
+        - '%$ContinentsRequestFilter'
+
