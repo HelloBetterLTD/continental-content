@@ -9,8 +9,8 @@ class ImportDBIPcom extends BuildTask{
 		$strCSVPath = CONTINENTAL_CONTENT_PATH . '/code/ThirdParty/dbip-city.csv';
 
 		if(!file_exists($strCSVPath)){
-			echo "<p>I cant find the IP2LOCATION-DB.CSV file to import any data.<br>
-				Please download DB3.LITE database from <a href='http://lite.ip2location.com/'>http://lite.ip2location.com/</a>.<br>
+			echo "<p>I cant find the dbip-city.csv file to import any data.<br>
+				Please download any database from <a href='https://db-ip.com/db/'>https://db-ip.com/db/</a>.<br>
 				NOTE: It's adviced to edit the DB to only include the countries you want to handle, it contains 2 million records!!!<br>
 				Or make a CSV contain these columns<br>
 				`IPFrom`,`IPTo`,`Country`,`Region`,`City`
