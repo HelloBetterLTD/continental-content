@@ -11,6 +11,7 @@ Controller:
 ContinentalContent:
   proxy_ip: '0.0.0.0'
   custom_urls: 'Y'
+  AutoAddCMSFields: true
 Injector:
   RequestProcessor:
     properties:

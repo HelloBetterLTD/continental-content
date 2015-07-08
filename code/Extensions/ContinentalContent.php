@@ -180,15 +180,17 @@ class ContinentalContent extends DataExtension {
 	 * @param FieldList $fields
 	 */
 	public function updateCMSFields(FieldList $fields) {
-		$arrBaseDB = Config::inst()->get(get_class($this->owner), 'db');
-		foreach(self::GetContinents() as $strContinent => $strSuffix){
-			if($arrBaseDB) foreach($arrBaseDB as $strName => $strType){
-				if(array_key_exists($strName . '_' . $strSuffix, $arrBaseDB)){
-					if($dataField = $fields->dataFieldByName($strName)){
-						$newField = clone $dataField;
-						$newField->setName($strName . '_' . $strSuffix);
-						$newField->setTitle($dataField->Title() . ' (' . $strContinent . ')');
-						$fields->insertAfter($newField, $strName);
+		if(Config::inst()->get('ContinentalContent', 'AutoAddCMSFields')){
+			$arrBaseDB = Config::inst()->get(get_class($this->owner), 'db');
+			foreach(self::GetContinents() as $strContinent => $strSuffix){
+				if($arrBaseDB) foreach($arrBaseDB as $strName => $strType){
+					if(array_key_exists($strName . '_' . $strSuffix, $arrBaseDB)){
+						if($dataField = $fields->dataFieldByName($strName)){
+							$newField = clone $dataField;
+							$newField->setName($strName . '_' . $strSuffix);
+							$newField->setTitle($dataField->Title() . ' (' . $strContinent . ')');
+							$fields->insertAfter($newField, $strName);
+						}
 					}
 				}
 			}
