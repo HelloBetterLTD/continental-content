@@ -7,13 +7,13 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class IPLocationAdmin extends ModelAdmin {
+class IPLocationAdmin extends ModelAdmin
+{
 
-	private static $menu_title = 'Ip To Location';
-	private static $url_segment = 'iptolocation';
+    private static $menu_title = 'Ip To Location';
+    private static $url_segment = 'iptolocation';
 
-	private static $managed_models = array(
-		'IpToLocation'
-	);
-
-} 
+    private static $managed_models = array(
+        'IpToLocation'
+    );
+}
