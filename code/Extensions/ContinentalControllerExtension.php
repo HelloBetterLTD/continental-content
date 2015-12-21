@@ -7,16 +7,17 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class ContinentalControllerExtension extends Extension {
+class ContinentalControllerExtension extends Extension
+{
 
-	function onBeforeInit(){
-		if(isset($_REQUEST['FAKE_IP'])){
-			Session::set('FAKE_IP', $_REQUEST['FAKE_IP']);
-		}
+    public function onBeforeInit()
+    {
+        if (isset($_REQUEST['FAKE_IP'])) {
+            Session::set('FAKE_IP', $_REQUEST['FAKE_IP']);
+        }
 
-		if(isset($_REQUEST['CLEAR_FAKE_IP'])){
-			Session::clear('FAKE_IP');
-		}
-	}
-
-} 
+        if (isset($_REQUEST['CLEAR_FAKE_IP'])) {
+            Session::clear('FAKE_IP');
+        }
+    }
+}
