@@ -7,73 +7,75 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class ContinentsRequestFilter implements RequestFilter {
+class ContinentsRequestFilter implements RequestFilter
+{
 
-	public function preRequest(SS_HTTPRequest $request, Session $session, DataModel $model) {
+    public function preRequest(SS_HTTPRequest $request, Session $session, DataModel $model)
+    {
+        ContinentsRequestFilter::UpdateContinentBasedOnURL($request);
+        $routes = ContinentsRequestFilter::FilterURLRoutes();
 
-
-
-		ContinentsRequestFilter::UpdateContinentBasedOnURL($request);
-		$routes = ContinentsRequestFilter::FilterURLRoutes();
-
-		foreach(ContinentalContent::GetContinents() as $strCode => $strContinent){
-			$routes[$strContinent.'/$URLSegment!//$Action/$ID/$OtherID'] = array(
-				'Controller' => 'ModelAsController',
-				$strContinent
-			);
-			$routes[$strContinent] = array(
-				'Controller' => 'ContinentsRootURLController',
-				$strContinent
-			);
-		}
-
-
-		$routes[''] = 'ContinentsRootURLController';
-
-		Config::inst()->update('Director', 'rules', $routes);
+        foreach (ContinentalContent::GetContinents() as $strCode => $strContinent) {
+            $routes[$strContinent.'/$URLSegment!//$Action/$ID/$OtherID'] = array(
+                'Controller' => 'ModelAsController',
+                $strContinent
+            );
+            $routes[$strContinent] = array(
+                'Controller' => 'ContinentsRootURLController',
+                $strContinent
+            );
+        }
 
 
-	}
+        $routes[''] = 'ContinentsRootURLController';
 
-	public function postRequest(SS_HTTPRequest $request, SS_HTTPResponse $response, DataModel $model) {
-	}
+        Config::inst()->update('Director', 'rules', $routes);
+    }
 
-
-	/**
-	 * @return array
-	 */
-	public static function FilterURLRoutes(){
-		$currentRouts = Config::inst()->get('Director', 'rules');
-		$arrDefaultRoutes = array(
-			'',
-			'$Controller//$Action/$ID/$OtherID',
-			'$URLSegment//$Action/$ID/$OtherID'
-		);
-
-		$routes = array();
+    public function postRequest(SS_HTTPRequest $request, SS_HTTPResponse $response, DataModel $model)
+    {
+    }
 
 
-		if($currentRouts) foreach($currentRouts as $route => $controller){
-			if(!empty($route) && !in_array($route, $arrDefaultRoutes)){
-				$routes[$route] = $controller;
-			}
-		}
+    /**
+     * @return array
+     */
+    public static function FilterURLRoutes()
+    {
+        $currentRouts = Config::inst()->get('Director', 'rules');
+        $arrDefaultRoutes = array(
+            '',
+            '$Controller//$Action/$ID/$OtherID',
+            '$URLSegment//$Action/$ID/$OtherID'
+        );
+
+        $routes = array();
 
 
-		return $routes;
-	}
+        if ($currentRouts) {
+            foreach ($currentRouts as $route => $controller) {
+                if (!empty($route) && !in_array($route, $arrDefaultRoutes)) {
+                    $routes[$route] = $controller;
+                }
+            }
+        }
 
-	/**
-	 * @param SS_HTTPRequest $request
-	 */
-	public static function UpdateContinentBasedOnURL(SS_HTTPRequest $request){
-		if($strURL = $request->getURL(false)){
-			$arrParts = explode('/', $strURL);
-			foreach(ContinentalContent::GetContinents() as $strContinent => $strCode){
-				if($strCode === $arrParts[0])
-					ContinentalContent::ForceUpdateContinent($strCode);
-			}
-		}
-	}
 
-} 
+        return $routes;
+    }
+
+    /**
+     * @param SS_HTTPRequest $request
+     */
+    public static function UpdateContinentBasedOnURL(SS_HTTPRequest $request)
+    {
+        if ($strURL = $request->getURL(false)) {
+            $arrParts = explode('/', $strURL);
+            foreach (ContinentalContent::GetContinents() as $strContinent => $strCode) {
+                if ($strCode === $arrParts[0]) {
+                    ContinentalContent::ForceUpdateContinent($strCode);
+                }
+            }
+        }
+    }
+}

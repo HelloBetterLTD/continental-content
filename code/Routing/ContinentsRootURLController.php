@@ -7,11 +7,12 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class ContinentsRootURLController extends RootURLController {
+class ContinentsRootURLController extends RootURLController
+{
 
 
-	public function handleRequests(SS_HTTPRequest $request, DataModel $model = null) {
-		return parent::handleRequests($request,$model);
-	}
-
-} 
+    public function handleRequests(SS_HTTPRequest $request, DataModel $model = null)
+    {
+        return parent::handleRequests($request, $model);
+    }
+}
