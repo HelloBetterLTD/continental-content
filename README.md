@@ -32,6 +32,21 @@ ContinentalContent:
     - AU
 ```
 
+If you want to use contents for a group of location then you can group them by.
+
+```
+ContinentalContent:
+  continents:
+    Europe:
+        - GB
+        - GE
+        - FR
+    - NZ
+    - AU
+```
+
+In this example Europe will be used for GB, GE, FR countries.
+
 
 ## Seperate URLS 
 

@@ -12,11 +12,10 @@ class ContinentsRequestFilter implements RequestFilter {
 	public function preRequest(SS_HTTPRequest $request, Session $session, DataModel $model) {
 
 
-
 		ContinentsRequestFilter::UpdateContinentBasedOnURL($request);
 		$routes = ContinentsRequestFilter::FilterURLRoutes();
 
-		foreach(ContinentalContent::GetContinents() as $strCode => $strContinent){
+		foreach(ContinentalContent::GetContinentSuffixes() as $strCode => $strContinent){
 			$routes[$strContinent.'/$URLSegment!//$Action/$ID/$OtherID'] = array(
 				'Controller' => 'ModelAsController',
 				$strContinent
@@ -69,7 +68,7 @@ class ContinentsRequestFilter implements RequestFilter {
 	public static function UpdateContinentBasedOnURL(SS_HTTPRequest $request){
 		if($strURL = $request->getURL(false)){
 			$arrParts = explode('/', $strURL);
-			foreach(ContinentalContent::GetContinents() as $strContinent => $strCode){
+			foreach(ContinentalContent::GetContinentSuffixes() as $strContinent => $strCode){
 				if($strCode === $arrParts[0])
 					ContinentalContent::ForceUpdateContinent($strCode);
 			}

@@ -108,7 +108,7 @@ class ContinentalContent extends DataExtension {
 			$indexes = $arrBaseIndexes;
 			$arrNewManyManyExtra = $arrBaseManyManyExtra;
 
-			foreach(self::GetContinents() as $strName => $strSuffix){
+			foreach(self::GetContinentSuffixes() as $strName => $strSuffix){
 				if($arrBaseFields) foreach($arrBaseFields as $strKey => $strType){
 					if(in_array(self::GetFieldType($strType), $arrMultipleFields)){
 						$arrNewFields[$strKey . '_' . $strSuffix] = $strType;
@@ -158,6 +158,34 @@ class ContinentalContent extends DataExtension {
 	 */
 	public static function GetContinents(){
 		$arrRet = array();
+		foreach(Config::inst()->get('ContinentalContent', 'continents') as $key => $continent){
+			if(is_array($continent)){
+				$arrRet[self::UpdateContinentExtensionName($key)] = $continent;
+			}
+			else{
+				$arrRet[self::UpdateContinentExtensionName($continent)] = array(
+					$continent
+				);
+			}
+		}
+		return $arrRet;
+	}
+
+
+	public static function GetContinentSuffixes(){
+		$arrRet = array();
+		foreach(Config::inst()->get('ContinentalContent', 'continents') as $key => $continent){
+			if(is_array($continent)){
+				$arrRet[Convert::raw2url($key)] = self::UpdateContinentExtensionName($key);
+			}
+			else{
+				$arrRet[Convert::raw2url($continent)] = self::UpdateContinentExtensionName($continent);
+			}
+		}
+		return $arrRet;
+	}
+
+	public static function UpdateContinentExtensionName($strName){
 		$default_replacements = array(
 			'/&amp;/u' 				=> '-and-',
 			'/&/u' 					=> '-and-',
@@ -165,14 +193,11 @@ class ContinentalContent extends DataExtension {
 			'/[_.-]+/u' 			=> '', // underscores and dots to dashes
 			'/[^A-Za-z0-9\-]+/u' 	=> '' // remove non-ASCII chars, only allow alphanumeric and dashes
 		);
-
-		foreach(Config::inst()->get('ContinentalContent', 'continents') as $strContinent){
-			$strExtension = strtolower($strContinent);
-			foreach($default_replacements as $regex => $replace)
-				$name = preg_replace($regex, $replace, $strExtension);
-			$arrRet[$strContinent] = $name;
+		$strName = strtolower($strName);
+		foreach($default_replacements as $regex => $replace){
+			$strName = preg_replace($regex, $replace, $strName);
 		}
-		return $arrRet;
+		return $strName;
 	}
 
 
@@ -182,7 +207,7 @@ class ContinentalContent extends DataExtension {
 	public function updateCMSFields(FieldList $fields) {
 		if(Config::inst()->get('ContinentalContent', 'AutoAddCMSFields')){
 			$arrBaseDB = Config::inst()->get(get_class($this->owner), 'db');
-			foreach(self::GetContinents() as $strContinent => $strSuffix){
+			foreach(self::GetContinentSuffixes() as $strContinent => $strSuffix){
 				if($arrBaseDB) foreach($arrBaseDB as $strName => $strType){
 					if(array_key_exists($strName . '_' . $strSuffix, $arrBaseDB)){
 						if($dataField = $fields->dataFieldByName($strName)){
@@ -231,18 +256,20 @@ class ContinentalContent extends DataExtension {
 			self::$current_continent = strtolower(trim(Session::get('SESSION_MAP_LOCATION')));
 		}
 		else if($location = ContinentalContentUtils::GetLocation()){
-			foreach(self::GetContinents() as $strContinent => $strCode){
-				if(strtolower(trim($location->Country)) == strtolower(trim($strContinent))
-					|| strtolower(trim($location->Region)) == strtolower(trim($strContinent))
-					|| strtolower(trim($location->City)) == strtolower(trim($strContinent))
-					|| strtolower(trim($location->Country)) == strtolower(trim($strCode))
-					|| strtolower(trim($location->Region)) == strtolower(trim($strCode))
-					|| strtolower(trim($location->City)) == strtolower(trim($strCode))
-				){
-					self::$current_continent = $strCode;
-					break;
+			foreach(self::GetContinents() as $strCode => $arrContinents){
+				foreach($arrContinents as $strContinent){
+					if(strtolower(trim($location->Country)) == strtolower(trim($strContinent))
+						|| strtolower(trim($location->Region)) == strtolower(trim($strContinent))
+						|| strtolower(trim($location->City)) == strtolower(trim($strContinent))
+						|| strtolower(trim($location->Country)) == strtolower(trim($strCode))
+						|| strtolower(trim($location->Region)) == strtolower(trim($strCode))
+						|| strtolower(trim($location->City)) == strtolower(trim($strCode))
+					){
+						self::$current_continent = $strCode;
+						break;
+					}
 				}
-					
+
 			}
 		}
 
