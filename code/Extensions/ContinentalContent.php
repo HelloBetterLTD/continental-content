@@ -557,10 +557,12 @@ class ContinentalContent extends DataExtension {
 	 * @return string
 	 */
 	protected function localiseSelect($class, $select, $fallback) {
+
 		return "CASE
-				WHEN (\"{$class}\".\"{$select}\" IS NOT NULL AND \"{$class}\".\"{$select}\" != '')
-				THEN \"{$class}\".\"{$select}\"
-				ELSE \"{$class}\".\"{$fallback}\" END";
+			WHEN (\"{$class}\".\"{$select}\" IS NOT NULL AND \"{$class}\".\"{$select}\" != '')
+			THEN \"{$class}\".\"{$select}\"
+			ELSE \"{$class}\".\"{$fallback}\" END";
+
 	}
 
 
@@ -592,8 +594,8 @@ class ContinentalContent extends DataExtension {
 						$expression = $this->localiseSelect($class, $strNewField, $field);
 						$query->selectField($expression, $alias);
 					}
-				}
 
+				}
 
 				// TODO: update where clues too
 

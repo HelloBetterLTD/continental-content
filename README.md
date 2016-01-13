@@ -47,6 +47,19 @@ ContinentalContent:
 
 In this example Europe will be used for GB, GE, FR countries.
 
+## What if you dont want to have multiple fields
+
+If there are fields which you dont wish to customise for each of the locations, you can specify them as configs
+
+```
+ContinentalContent:
+  exclude_field_names:
+    - SiteTree.Title
+    - URLSegment
+```
+
+The above removes URLSegment from any of the data objects you have a field called URLSegment, but it removes Title only from SiteTree.
+
 
 ## Seperate URLS 
 
