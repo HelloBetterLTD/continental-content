@@ -30,5 +30,15 @@ class IpToLocation extends DataObject {
 		'City'
 	);
 
+	public static function addr_type($addr) {
+
+		if (ip2long($addr) !== false) {
+			return "ipv4";
+		} else if (preg_match('/^[0-9a-fA-F:]+$/', $addr) && @inet_pton($addr)) {
+			return "ipv6";
+		}
+
+	}
+
 
 } 

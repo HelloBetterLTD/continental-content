@@ -38,10 +38,30 @@ class ContinentalContentUtils {
 	public static function GetLocation(){
 		if($strIP = self::IPAddress()){
 			$iNumber = self::IPAddressToIPNumber($strIP);
-			if(self::GetProvider() == 'IPDBCOM')
-				return IpToLocation::get()->filter(array(
-				'IPFrom:LessThanOrEqual'	=> $iNumber,
-				))->sort('IPFrom DESC')->first();
+			if(self::GetProvider() == 'IPDBCOM'){
+				$conn = DB::get_conn();
+				$addressType = IpToLocation::addr_type($strIP);
+				$sql = "SELECT
+						`ip_start` AS IPFrom,
+						`ip_end` AS IPTo,
+						`country` AS Country,
+						`stateprov` AS Region,
+						`city` AS City
+				 	FROM
+						`dbip_lookup`
+					WHERE
+						addr_type = '{$addressType}'
+						AND ip_start <= '" . $conn->escapeString($iNumber) . "'
+					ORDER BY
+						ip_start DESC
+					LIMIT 1";
+				$res = DB::query($sql);
+				while($row = $res->nextRecord()){
+					$location = new IpToLocation($row);
+					return $location;
+				}
+
+			}
 			else
 				return IpToLocation::get()->filter(array(
 					'IPFrom:LessThanOrEqual'	=> $iNumber,

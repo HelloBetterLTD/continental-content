@@ -4,6 +4,7 @@ class ImportDBIPcom extends BuildTask{
 	protected $description = 'Import DBIPcom service to IPToLocation dataobjects from CSV';
 	protected $connection;
 
+
 	public function run($request) {
 
 		$strCSVPath = CONTINENTAL_CONTENT_PATH . '/code/ThirdParty/dbip-city.csv';
@@ -31,8 +32,27 @@ class ImportDBIPcom extends BuildTask{
 			else{
 
 				increase_time_limit_to();
+
+				//
+				// this needs varbinary fields so create the table here
+				//
+				$arr = DB::table_list();
+				if(!in_array('dbip_lookup', $arr)){
+					$strSQL = "CREATE TABLE `dbip_lookup` (
+					  `addr_type` enum('ipv4','ipv6') NOT NULL,
+					  `ip_start` varbinary(16) NOT NULL,
+					  `ip_end` varbinary(16) NOT NULL,
+					  `country` char(2) NOT NULL,
+					  `stateprov` varchar(80) NOT NULL,
+					  `city` varchar(80) NOT NULL,
+					  PRIMARY KEY (`ip_start`)
+					);";
+					DB::query($strSQL);
+				}
+
+
 				if(isset($_REQUEST['emptydb'])){
-					DB::query('TRUNCATE `IpToLocation`;');
+					DB::query('TRUNCATE `dbip_lookup`;');
 				}
 
 				$conn = DB::get_conn();
@@ -40,7 +60,6 @@ class ImportDBIPcom extends BuildTask{
 					$conn->transactionStart();
 				}
 
-				$arrFields = array_keys(Config::inst()->get('IpToLocation', 'db'));
 				$handle = fopen($strCSVPath, "r");
 				if ($handle) {
 
@@ -48,9 +67,18 @@ class ImportDBIPcom extends BuildTask{
 						$line = str_replace('","', '___', $line);
 						$line = str_replace('"', '', $line);
 						$arrParts = Convert::raw2sql(explode("___", $line));
-						$arrParts[0] = ContinentalContentUtils::IPAddressToIPNumber($arrParts[0]);
-						$arrParts[1] = ContinentalContentUtils::IPAddressToIPNumber($arrParts[1]);
-						DB::query('INSERT INTO `IpToLocation` (`' . implode('`,`', $arrFields) .'`) VALUES (\'' . implode('\',\'', $arrParts) . '\')');
+						$vals = array(
+							'addr_type'		=> "'" . IpToLocation::addr_type($arrParts[0]) . "'",
+							'ip_start'		=> "'" . $conn->escapeString(ContinentalContentUtils::IPAddressToIPNumber($arrParts[0])) . "'",
+							'ip_end'		=> "'" . $conn->escapeString(ContinentalContentUtils::IPAddressToIPNumber($arrParts[1])) . "'",
+							'country'		=> "'" . $arrParts[2] . "'",
+							'stateprov'		=> "'" . $arrParts[3] . "'",
+							'city'			=> "'" . $arrParts[4] . "'"
+						);
+
+						$fields = array_keys($vals);
+						DB::query('INSERT INTO `dbip_lookup` (`' . implode('`,`', $fields) .'`) VALUES (' . implode(',', $vals) . ')');
+
 					}
 
 					fclose($handle);
