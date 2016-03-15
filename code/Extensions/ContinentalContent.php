@@ -531,7 +531,7 @@ class ContinentalContent extends DataExtension {
 						|| (!is_null($strCountryCode) && strtolower(trim($location->Country)) == strtolower(trim($strCountryCode)))
 					){
 						self::$current_continent = $strCode;
-						break;
+						break 2;
 					}
 				}
 
