@@ -23,11 +23,16 @@ class ContinentalContentUtils {
 
 
 	public static function IPAddressToIPNumber($strIP){
+		if(self::GetProvider() == 'IPDBCOM'){
+			return inet_pton($strIP);
+		}
+
 		$arrParts = explode('.', $strIP);
 		return $arrParts[3]
 			+ ($arrParts[2] * 256)
 			+ ($arrParts[1] * 256 * 256)
 			+ ($arrParts[0] * 256 * 256 * 256);
+
 	}
 
 	public static function GetLocation(){

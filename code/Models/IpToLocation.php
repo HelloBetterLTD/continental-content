@@ -10,8 +10,8 @@
 class IpToLocation extends DataObject {
 
 	private static $db = array(
-		'IPFrom'		=> 'Float',
-		'IPTo'			=> 'Float',
+		'IPFrom'		=> 'Varchar(100)',
+		'IPTo'			=> 'Varchar(100)',
 		'Country'		=> 'Varchar(2)',
 		'Region'		=> 'Varchar(128)',
 		'City'			=> 'Varchar(128)',
