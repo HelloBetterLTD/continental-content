@@ -35,6 +35,11 @@ class ImportDBIPcom extends BuildTask{
 					DB::query('TRUNCATE `IpToLocation`;');
 				}
 
+				$conn = DB::get_conn();
+				if($conn->supportsTransactions()){
+					$conn->transactionStart();
+				}
+
 				$arrFields = array_keys(Config::inst()->get('IpToLocation', 'db'));
 				$handle = fopen($strCSVPath, "r");
 				if ($handle) {
@@ -52,7 +57,9 @@ class ImportDBIPcom extends BuildTask{
 				} else {
 					echo 'Error opening file';
 				}
-
+				if($conn->supportsTransactions()){
+					$conn->transactionEnd();
+				}
 			}
 
 		}

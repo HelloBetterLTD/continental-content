@@ -12,10 +12,12 @@ class ContinentalControllerExtension extends Extension {
 	function onBeforeInit(){
 		if(isset($_REQUEST['FAKE_IP'])){
 			Session::set('FAKE_IP', $_REQUEST['FAKE_IP']);
+			Session::save();
 		}
 
 		if(isset($_REQUEST['CLEAR_FAKE_IP'])){
 			Session::clear('FAKE_IP');
+			Session::save();
 		}
 	}
 
