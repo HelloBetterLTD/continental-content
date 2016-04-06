@@ -13,10 +13,10 @@ class ContinentalContentUtils {
 	public static function IPAddress(){
 		if($ip = Session::get('FAKE_IP'))
 			return $ip;
-		else if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP']))
-			return $_SERVER['HTTP_CLIENT_IP'];
 		elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 			return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		else if (isset($_SERVER['HTTP_CLIENT_IP']) && !empty($_SERVER['HTTP_CLIENT_IP']))
+			return $_SERVER['HTTP_CLIENT_IP'];
 		elseif (isset($_SERVER['REMOTE_ADDR']))
 			return $_SERVER['REMOTE_ADDR'];
 	}
