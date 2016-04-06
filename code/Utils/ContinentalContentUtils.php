@@ -37,6 +37,7 @@ class ContinentalContentUtils {
 
 	public static function GetLocation(){
 		if($strIP = self::IPAddress()){
+			Debug::log('IP Address : ' . $strIP);
 			$iNumber = self::IPAddressToIPNumber($strIP);
 			if(self::GetProvider() == 'IPDBCOM'){
 				$conn = DB::get_conn();
@@ -58,6 +59,7 @@ class ContinentalContentUtils {
 				$res = DB::query($sql);
 				while($row = $res->nextRecord()){
 					$location = new IpToLocation($row);
+					Debug::log("Location detect: '{$location->City}', '{$location->Region}', '{$location->Country}'");
 					return $location;
 				}
 
