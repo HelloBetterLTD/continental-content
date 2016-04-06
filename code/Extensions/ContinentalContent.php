@@ -518,7 +518,6 @@ class ContinentalContent extends DataExtension {
 		else if($location = ContinentalContentUtils::GetLocation()){
 
 			$countryToCode = array_flip(self::$country_codes);
-			Debug::log('Locations ' . print_r(self::GetContinents(), 1));
 			foreach(self::GetContinents() as $strCode => $arrContinents){
 				foreach($arrContinents as $strContinent){
 
@@ -531,7 +530,7 @@ class ContinentalContent extends DataExtension {
 						|| strtolower(trim($location->City)) == strtolower(trim($strCode))
 						|| (!is_null($strCountryCode) && strtolower(trim($location->Country)) == strtolower(trim($strCountryCode)))
 					){
-						Debug::log('Selected location ' . $strCode);
+						Debug::log('Selected location . ' . $strCode);
 						self::$current_continent = $strCode;
 						break 2;
 					}
