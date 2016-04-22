@@ -15,11 +15,13 @@ class IpToLocation extends DataObject {
 		'Country'		=> 'Varchar(2)',
 		'Region'		=> 'Varchar(128)',
 		'City'			=> 'Varchar(128)',
+		'Type'			=> 'ENUM("IpV4,IpV6")'
 	);
 
 	private static $indexes = array(
 		'IPFrom'		=> true,
-		'IPTo'			=> true
+		'IPTo'			=> true,
+		'Type'			=> true,
 	);
 
 	private static $summary_fields = array(

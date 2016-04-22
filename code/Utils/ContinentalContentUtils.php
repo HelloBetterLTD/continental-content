@@ -21,8 +21,18 @@ class ContinentalContentUtils {
 			return $_SERVER['REMOTE_ADDR'];
 	}
 
+	public static function IPType($addr)
+	{
+		if (ip2long($addr) !== false) {
+			return "ipv4";
+		} else if (preg_match('/^[0-9a-fA-F:]+$/', $addr) && @inet_pton($addr)) {
+			return "ipv6";
+		}
+	}
 
-	public static function IPAddressToIPNumber($strIP){
+
+	public static function IPAddressToIPNumber($strIP)
+	{
 		if(self::GetProvider() == 'IPDBCOM'){
 			return inet_pton($strIP);
 		}
@@ -35,10 +45,32 @@ class ContinentalContentUtils {
 
 	}
 
-	public static function GetLocation(){
+	public static function IPV6AddressToIPNumber($ipv6)
+	{
+		$int = inet_pton($ipv6);
+		$bits = 15;
+		$ipv6long = 0;
+		while($bits >= 0) {
+			$bin = sprintf("%08b", (ord($int[$bits])));
+
+			if($ipv6long){
+				$ipv6long = $bin . $ipv6long;
+			}
+			else{
+				$ipv6long = $bin;
+			}
+			$bits--;
+		}
+		$ipv6long = gmp_strval(gmp_init($ipv6long, 2), 10);
+		return $ipv6long;
+	}
+
+	public static function GetLocation()
+	{
 		if($strIP = self::IPAddress()){
 			Debug::log('IP Address : ' . $strIP);
-			$iNumber = self::IPAddressToIPNumber($strIP);
+
+			$iNumber = self::IPType($strIP) == 'ipv4' ? self::IPAddressToIPNumber($strIP) : self::IPV6AddressToIPNumber($strIP);
 			if(self::GetProvider() == 'IPDBCOM'){
 				$conn = DB::get_conn();
 				$addressType = IpToLocation::addr_type($strIP);
@@ -64,11 +96,13 @@ class ContinentalContentUtils {
 				}
 
 			}
-			else
+			else {
 				return IpToLocation::get()->filter(array(
-					'IPFrom:LessThanOrEqual'	=> $iNumber,
-					'IPTo:GreaterThanOrEqual'	=> $iNumber
+					'IPFrom:LessThanOrEqual' 	=> $iNumber,
+					'IPTo:GreaterThanOrEqual' 	=> $iNumber,
+					'Type' 						=> self::IPType($strIP) == 'ipv4' ? 'IpV4' : 'IpV6'
 				))->first();
+			}
 		}
 		return null;
 	}
