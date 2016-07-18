@@ -530,7 +530,9 @@ class ContinentalContent extends DataExtension {
 						|| strtolower(trim($location->City)) == strtolower(trim($strCode))
 						|| (!is_null($strCountryCode) && strtolower(trim($location->Country)) == strtolower(trim($strCountryCode)))
 					){
-						Debug::log('Selected location . ' . $strCode);
+						if(isset($_REQUEST['debug_location'])) {
+							echo "<p style='display: block; padding: 10px 40px; background: white; color: black; position: absolute; top: 43px; left: 0; z-index: 999999;'>$strCode</p>";
+						}
 						self::$current_continent = $strCode;
 						break 2;
 					}

@@ -67,42 +67,15 @@ class ContinentalContentUtils {
 
 	public static function GetLocation()
 	{
-		if($strIP = self::IPAddress()){
-			Debug::log('IP Address : ' . $strIP);
+		if($ip = self::IPAddress()){
+			Debug::log('IP Address : ' . $ip);
 
-			$iNumber = self::IPType($strIP) == 'ipv4' ? self::IPAddressToIPNumber($strIP) : self::IPV6AddressToIPNumber($strIP);
-			if(self::GetProvider() == 'IPDBCOM'){
-				$conn = DB::get_conn();
-				$addressType = IpToLocation::addr_type($strIP);
-				$sql = "SELECT
-						`ip_start` AS IPFrom,
-						`ip_end` AS IPTo,
-						`country` AS Country,
-						`stateprov` AS Region,
-						`city` AS City
-				 	FROM
-						`dbip_lookup`
-					WHERE
-						addr_type = '{$addressType}'
-						AND ip_start <= '" . $conn->escapeString($iNumber) . "'
-					ORDER BY
-						ip_start DESC
-					LIMIT 1";
-				$res = DB::query($sql);
-				while($row = $res->nextRecord()){
-					$location = new IpToLocation($row);
-					Debug::log("Location detect: '{$location->City}', '{$location->Region}', '{$location->Country}'");
-					return $location;
-				}
+			$ipNumber = self::IPType($ip) == 'ipv4' ? self::IPAddressToIPNumber($ip) : self::IPV6AddressToIPNumber($ip);
 
-			}
-			else {
-				return IpToLocation::get()->filter(array(
-					'IPFrom:LessThanOrEqual' 	=> $iNumber,
-					'IPTo:GreaterThanOrEqual' 	=> $iNumber,
-					'Type' 						=> self::IPType($strIP) == 'ipv4' ? 'IpV4' : 'IpV6'
-				))->first();
-			}
+			$parse = IpParser::get(self::GetProvider());
+			return $parse->getLocation($ip, $ipNumber);
+
+			
 		}
 		return null;
 	}
