@@ -515,6 +515,28 @@ class ContinentalContent extends DataExtension {
 		if(!self::IsViewingThroughProxy() && Session::get('SESSION_MAP_LOCATION')){
 			self::$current_continent = strtolower(trim(Session::get('SESSION_MAP_LOCATION')));
 		}
+
+		else if ($forwarder = ForwardedIP::get()->filter('IP', ContinentalContentUtils::IPAddress())->first()) {
+			$countryToCode = array_flip(self::$country_codes);
+			foreach(self::GetContinents() as $strCode => $arrContinents) {
+				foreach ($arrContinents as $strContinent) {
+					$strCountryCode = isset($countryToCode[$strContinent]) ? $countryToCode[$strContinent] : null;
+					if($strCountryCode == $forwarder->Continent) {
+						self::$current_continent = $strCode;
+						if(isset($_REQUEST['debug_location'])) {
+							echo "<p style='display: block; padding: 10px 40px; background: white; color: black; position: absolute; top: 43px; left: 0; z-index: 999999;'>{$forwarder->Continent}</p>";
+						}
+
+						break 2;
+
+					}
+				}
+			}
+
+
+
+
+		}
 		else if($location = ContinentalContentUtils::GetLocation()){
 
 			$countryToCode = array_flip(self::$country_codes);

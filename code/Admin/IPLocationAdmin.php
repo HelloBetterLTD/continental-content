@@ -13,6 +13,7 @@ class IPLocationAdmin extends ModelAdmin {
 	private static $url_segment = 'iptolocation';
 
 	private static $managed_models = array(
+		'ForwardedIP',
 		'IpToLocation'
 	);
 
