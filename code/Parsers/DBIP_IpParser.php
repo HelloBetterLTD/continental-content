@@ -21,8 +21,8 @@ class DBIP_IpParser extends IpParser
 			$data = Convert::json2array($json);
 			$location = new ArrayData(array(
 				'Country'		=> $data['countryCode'],
-				'Region'		=> $data['stateProv'],
-				'City'			=> $data['city'],
+				'Region'		=> isset($data['stateProv']) ? $data['stateProv'] : '',
+				'City'			=> isset($data['city']) ? $data['city'] : '',
 				'Type'			=> ContinentalContentUtils::IPType($ip)
 			));
 
