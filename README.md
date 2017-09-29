@@ -106,6 +106,12 @@ If the above returns true you can draw a location selector to select the visitor
 The module only supports max mind, upload the max mind City data base from the site config.
 
 
+# Debug options
 
+There are several options to debug the configs. You can pass three get vars
+
+1. FAKE_IP -- fake the ip address
+2. CLEAR_IP -- clear the ip from the session
+3. debug_location -- Displays a debug message on screen for the locations.
 
 
