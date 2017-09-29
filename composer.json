@@ -1,0 +1,17 @@
+{
+    "name": "silverstripers/continental-content",
+    "description": "Lets you add contents for different continents",
+    "type": "silverstripe-module",
+    "keywords": ["silverstripe", "contents", "continental", "iptolocation", "ip2location"],
+	  "license": "BSD-3-Clause",
+    "authors": [
+    {
+        "name": "Nivanka Fonseka",
+        "email": "nivanka@silverstripers.com"
+    }],
+    "require": {
+        "silverstripe/framework": "~3.1",
+        "geoip2/geoip2": "v2.6.0"
+    }
+    
+}

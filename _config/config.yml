@@ -1,0 +1,26 @@
+---
+Name: continental-content
+After: 'framework/*','cms/*'
+---
+# YAML configuration for SilverStripe
+# See http://doc.silverstripe.org/framework/en/topics/configuration
+# Caution: Indentation through two spaces, not tabs
+Controller:
+  extensions:
+    - ContinentalControllerExtension
+ContinentalContent:
+  proxy_ip: '0.0.0.0'
+  custom_urls: 'Y'
+  AutoAddCMSFields: true
+  provider: ''
+SiteConfig:
+  extensions:
+    - ContinentalContentConfigs
+Injector:
+  RequestProcessor:
+    properties:
+      filters:
+        - '%$ContinentsRequestFilter'
+File:
+  allowed_extensions:
+    - mmdb
