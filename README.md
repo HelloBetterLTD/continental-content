@@ -27,9 +27,15 @@ Once you've done the above you can set up the locations which you want to have d
 ```
 ContinentalContent:
   continents:
-    - Gb
-    - NZ
-    - AU
+    BC:
+      Country: CA
+      SubDivision: BC
+    AB:
+      Country: CA
+      SubDivision: AB
+    ON:
+      Country: CA
+      SubDivision: ON
 ```
 
 If you want to use contents for a group of location then you can group them by.
@@ -38,11 +44,14 @@ If you want to use contents for a group of location then you can group them by.
 ContinentalContent:
   continents:
     Europe:
+      Country:
         - GB
         - GE
         - FR
-    - NZ
-    - AU
+    NZ:
+        Country: NZ
+    AU:
+        Country: AU
 ```
 
 In this example Europe will be used for GB, GE, FR countries.
@@ -72,7 +81,8 @@ ContinentalContent:
 
 ## Webserver cant read the visitors IP ? (Higher Level Customizations)
 
-Sometimes this can happen, if you are using several load balancers to and have your website behind them and your load balancers wont pass the end clients IP. In this can use can set up a form and ask your users to select the location they are coming from. 
+Sometimes this can happen, if you are using several load balancers to and have your website behind them and your load balancers
+wont pass the end clients IP. In this can use can set up a form and ask your users to select the location they are coming from.
 
 ```
 ContinentalContent:
@@ -93,13 +103,7 @@ If the above returns true you can draw a location selector to select the visitor
 
 # Setting up IP database
 
-The module can use three types of database to detect a user's location. It can use one of these three data feeds. 
-
-http://dev.maxmind.com/geoip/legacy/geolite/
-http://lite.ip2location.com/
-https://db-ip.com/db/
-
-visit yoursite.com/dev/tasks and you will get three build task options to import data from the feeds, and those contains further instructions on downloading the feeds etc. 
+The module only supports max mind, upload the max mind City data base from the site config.
 
 
 
