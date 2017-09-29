@@ -24,3 +24,6 @@ Injector:
 File:
   allowed_extensions:
     - mmdb
+Object:
+  extensions:
+    - ContinentalObjectExtension
