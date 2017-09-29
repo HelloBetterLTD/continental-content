@@ -7,6 +7,7 @@
  * Time: 8:43 AM
  * To change this template use File | Settings | File Templates.
  */
+
 abstract class IpParser extends Object
 {
 
@@ -16,11 +17,11 @@ abstract class IpParser extends Object
 			user_error('The parser you specified does not exist', E_USER_ERROR);
 			die();
 		}
-
 		$parser = new $type();
 		return $parser;
 	}
 
 	abstract public function getLocation($ip, $ipNumber);
 
+	
 }

@@ -314,6 +314,7 @@ class ContinentalContent extends DataExtension {
 	}
 
 
+
 	public static function add_debug_message($message)
 	{
 		self::$debug_messages[] = $message;
@@ -326,6 +327,7 @@ class ContinentalContent extends DataExtension {
 		}
 		return false;
 	}
+
 
 	/**
 	 * @param $class
@@ -443,9 +445,9 @@ class ContinentalContent extends DataExtension {
 
 	public static function GetContinentSuffixes(){
 		$arrRet = array();
-		foreach(Config::inst()->get('ContinentalContent', 'continents') as $key => $filter){
+		foreach(Config::inst()->get('ContinentalContent', 'continents') as $key => $filter)
 			$arrRet[Convert::raw2url($key)] = self::UpdateContinentExtensionName($key);
-		}
+
 		return $arrRet;
 	}
 
@@ -572,11 +574,6 @@ class ContinentalContent extends DataExtension {
 		return self::$current_continent;
 	}
 
-	public function ContinentMatchToLocation()
-	{
-
-	}
-
 
 	/**
 	 * @return array
@@ -630,9 +627,7 @@ class ContinentalContent extends DataExtension {
 						$expression = $this->localiseSelect($class, $strNewField, $field);
 						$query->selectField($expression, $alias);
 					}
-
 				}
-
 			}
 		}
 	}

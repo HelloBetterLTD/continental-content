@@ -11,12 +11,14 @@ class ContinentsRequestFilter implements RequestFilter {
 
 	public function preRequest(SS_HTTPRequest $request, Session $session, DataModel $model) {
 
+
 		if($request->getVar('FAKE_IP')){
 			ContinentalContentUtils::set_fake_ip($request->getVar('FAKE_IP'));
 		}
 		if($request->getVar('CLEAR_FAKE_IP')){
 			ContinentalContentUtils::clear_fake_ip();
 		}
+
 
 		ContinentsRequestFilter::UpdateContinentBasedOnURL($request);
 		$routes = ContinentsRequestFilter::FilterURLRoutes();
@@ -32,6 +34,7 @@ class ContinentsRequestFilter implements RequestFilter {
 			);
 		}
 
+
 		$routes[''] = 'ContinentsRootURLController';
 		Config::inst()->update('Director', 'rules', $routes);
 	}
@@ -43,7 +46,7 @@ class ContinentsRequestFilter implements RequestFilter {
 					ContinentalContent::get_debug_messages()
 				.'</div>';
 		}
-
+		
 	}
 
 

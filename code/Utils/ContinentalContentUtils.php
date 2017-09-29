@@ -9,6 +9,7 @@
 
 class ContinentalContentUtils {
 
+
 	private static $fake_ip = null;
 
 	public static function set_fake_ip($ip)
@@ -104,6 +105,5 @@ class ContinentalContentUtils {
 	
 	public static function GetProvider(){
 		return Config::inst()->get('ContinentalContent', 'provider') . 'Parser';
-
 	}
 }

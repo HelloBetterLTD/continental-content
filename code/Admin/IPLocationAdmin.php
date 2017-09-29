@@ -6,9 +6,8 @@
  * Time: 3:17 PM
  * To change this template use File | Settings | File Templates.
  */
-namespace SilverStripers\ContinentalContent\Admin;
 
-class IPLocationAdmin extends \ModelAdmin {
+class IPLocationAdmin extends ModelAdmin {
 
 	private static $menu_title = 'GEO Location';
 	private static $url_segment = 'iptolocation';
